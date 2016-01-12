@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 
 from twisted.trial import unittest
 
-from spreadflow_proc_exiftool import MetadataExtractor
+from spreadflow_exiftool.proc import MetadataExtractor
 
 
-class SpreadflowProcExiftoolTestCase(unittest.TestCase):
+class SpreadflowExiftoolTestCase(unittest.TestCase):
     pass

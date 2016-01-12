@@ -1,15 +1,15 @@
 from setuptools import setup
 
 setup(
-    name='SpreadFlowProcExiftool',
+    name='SpreadFlowExiftool',
     version='0.0.1',
     description='Exiftool integration for SpreadFlow metadata extraction and processing engine',
     author='Lorenz Schori',
     author_email='lo@znerol.ch',
-    url='https://github.com/znerol/spreadflow-proc-exiftool',
+    url='https://github.com/znerol/spreadflow-exiftool',
     packages=[
-        'spreadflow_proc_exiftool',
-        'spreadflow_proc_exiftool.test'
+        'spreadflow_exiftool',
+        'spreadflow_exiftool.test'
     ],
     install_requires=[
         'SpreadFlowCore',

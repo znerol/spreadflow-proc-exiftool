@@ -1,8 +1,8 @@
 SpreadFlow Exiftool Processor
 ==============================
 
-.. image:: https://travis-ci.org/znerol/spreadflow-proc-exiftool.svg?branch=master
-    :target: https://travis-ci.org/znerol/spreadflow-proc-exiftool
+.. image:: https://travis-ci.org/znerol/spreadflow-exiftool.svg?branch=master
+    :target: https://travis-ci.org/znerol/spreadflow-exiftool
 
 
 Exiftool integration for SpreadFlow metadata extraction and processing engine.
