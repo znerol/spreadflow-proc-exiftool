@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import json
 from twisted.internet import defer, protocol
 from twisted.internet.endpoints import clientFromString
-from twisted_exiftool import ExiftoolProtocol
+from txexiftool import ExiftoolProtocol
 
 class ExiftoolProtocolFactory(protocol.ClientFactory):
 
