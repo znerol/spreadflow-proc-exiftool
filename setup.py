@@ -13,7 +13,7 @@ setup(
     ],
     install_requires=[
         'SpreadFlowCore',
-        'TwistedExiftool',
+        'txExiftool',
     ],
     zip_safe=False,
     classifiers=[
