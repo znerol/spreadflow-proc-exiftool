@@ -18,6 +18,16 @@ class ExiftoolProtocolFactory(protocol.ClientFactory):
         return proto
 
 
+class MetadataExtractorError(Exception):
+    def __init__(self, path, cause):
+        super(MetadataExtractorError, self).__init__()
+        self.path = path
+        self.cause = cause
+
+    def __str__(self):
+        return "Failed to extract metadata from {:s}: {:s}".format(
+            self.path, self.cause)
+
 class MetadataExtractor(object):
 
     reactor = None
@@ -32,11 +42,29 @@ class MetadataExtractor(object):
 
     @defer.inlineCallbacks
     def __call__(self, item, send):
-        jobs = [self.args + (item['data'][oid]['path'].encode('utf-8'),) for oid in item['inserts']]
-        results = yield defer.DeferredList([self._protocol.execute(*job) for job in jobs])
+        def _job_callback(result, oid):
+            return oid, self.attrib, json.loads(result, encoding='utf-8')[0]
 
-        for oid, result in zip(item['inserts'], results):
-            item['data'][oid][self.attrib] = json.loads(result[1], encoding='utf-8')[0]
+        failures = []
+        def _job_errback(failure, oid):
+            failures.append((oid, failure))
+
+        jobs = []
+        for oid in item['inserts']:
+            args = self.args + (item['data'][oid]['path'].encode('utf-8'),)
+            job = self._protocol.execute(*args)
+            job.addCallback(_job_callback, oid)
+            job.addErrback(_job_errback, oid)
+            jobs.append(job)
+
+        results = yield defer.DeferredList(jobs)
+
+        if len(failures):
+            oid, failure = failures[0]
+            raise MetadataExtractorError(item['data'][oid]['path'], failure)
+
+        for status, (oid, attrib, data) in results:
+            item['data'][oid][attrib] = data
 
         send(item, self)
 
