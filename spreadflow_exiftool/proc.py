@@ -4,8 +4,9 @@ from __future__ import unicode_literals
 
 import json
 from twisted.internet import defer, protocol
-from twisted.internet.endpoints import clientFromString
 from txexiftool import ExiftoolProtocol
+
+from spreadflow_core.remote import ClientEndpointMixin
 
 class ExiftoolProtocolFactory(protocol.ClientFactory):
 
@@ -28,14 +29,11 @@ class MetadataExtractorError(Exception):
         return "Failed to extract metadata from {:s}: {:s}".format(
             self.path, self.cause)
 
-class MetadataExtractor(object):
+class MetadataExtractor(ClientEndpointMixin):
 
-    reactor = None
-
-    def __init__(self, endpoint, args = (), attrib='metadata', buffersize=2**22):
-        self.factory = ExiftoolProtocolFactory.forProtocol(ExiftoolProtocol, buffersize)
-        self.endpoint = endpoint
-        self._protocol = None
+    def __init__(self, strport, args=(), attrib='metadata', buffersize=2**22):
+        self.buffersize = buffersize
+        self.strport = strport
 
         self.args = tuple(arg if isinstance(arg, bytes) else arg.encode('utf-8') for arg in args) + (b'-j', b'-charset', b'exiftool=UTF-8', b'-charset', b'filename=UTF-8')
         self.attrib = attrib
@@ -52,7 +50,7 @@ class MetadataExtractor(object):
         jobs = []
         for oid in item['inserts']:
             args = self.args + (item['data'][oid]['path'].encode('utf-8'),)
-            job = self._protocol.execute(*args)
+            job = self.peer.execute(*args)
             job.addCallback(_job_callback, oid)
             job.addErrback(_job_errback, oid)
             jobs.append(job)
@@ -68,18 +66,5 @@ class MetadataExtractor(object):
 
         send(item, self)
 
-    def attach(self, dispatcher, reactor):
-        self.reactor = reactor
-
-    @defer.inlineCallbacks
-    def start(self):
-        self._protocol = yield clientFromString(self.reactor, 'exiftool').connect(self.factory)
-
-    @defer.inlineCallbacks
-    def join(self):
-        if self._protocol:
-            yield self._protocol.loseConnection()
-            self._protocol = None
-
-    def detach(self):
-        self.reactor = None
+    def get_client_protocol_factory(self, scheduler, reactor):
+        return ExiftoolProtocolFactory.forProtocol(ExiftoolProtocol, self.buffersize)
