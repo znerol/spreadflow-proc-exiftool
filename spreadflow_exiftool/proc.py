@@ -31,8 +31,9 @@ class MetadataExtractorError(Exception):
 
 class MetadataExtractor(ClientEndpointMixin):
 
-    def __init__(self, strport, args=(), attrib='metadata', buffersize=2**22):
+    def __init__(self, strport, args=(), attrib='metadata', buffersize=2**22, decode_errors='strict'):
         self.buffersize = buffersize
+        self.decode_errors = decode_errors
         self.strport = strport
 
         self.args = tuple(arg if isinstance(arg, bytes) else arg.encode('utf-8') for arg in args) + (b'-j', b'-charset', b'exiftool=UTF-8', b'-charset', b'filename=UTF-8')
@@ -41,7 +42,8 @@ class MetadataExtractor(ClientEndpointMixin):
     @defer.inlineCallbacks
     def __call__(self, item, send):
         def _job_callback(result, oid):
-            return oid, self.attrib, json.loads(result, encoding='utf-8')[0]
+            decoded_data = result.decode('utf-8', errors=self.decode_errors)
+            return oid, self.attrib, json.loads(decoded_data)[0]
 
         failures = []
         def _job_errback(failure, oid):
