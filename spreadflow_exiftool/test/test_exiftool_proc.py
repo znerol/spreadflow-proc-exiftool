@@ -12,7 +12,6 @@ from testtools.assertions import assert_that
 from spreadflow_core.scheduler import Scheduler
 from spreadflow_delta.test.matchers import MatchesSendDeltaItemInvocation
 from twisted.internet import defer
-from twisted.python import failure
 
 from spreadflow_exiftool.proc import MetadataExtractor, MetadataExtractorError
 from txexiftool import ExiftoolProtocol
