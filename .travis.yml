@@ -2,8 +2,17 @@ language: python
 python:
   - 2.7
   - 3.4
+  - 3.5
+cache:
+  directories:
+    - $HOME/.cache/pip
 install:
-  - python bootstrap.py
-  - bin/buildout
+  - pip install -U pip wheel
+  - pip install -r test-requirements.txt
+  - pip install -e .[tests]
 script:
-  - bin/trial spreadflow_exiftool
+  - pylint --errors-only spreadflow_exiftool
+  - pyflakes spreadflow_exiftool
+  - coverage run `which trial` spreadflow_exiftool
+after_success:
+  - coveralls
