@@ -27,7 +27,7 @@ class MetadataExtractorError(Exception):
 
     def __str__(self):
         return "Failed to extract metadata from {:s}: {:s}".format(
-            self.path, self.cause)
+            self.path, str(self.cause))
 
 class MetadataExtractor(ClientEndpointMixin):
 
