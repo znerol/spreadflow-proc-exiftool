@@ -3,6 +3,13 @@
 
 [run]
 branch = True
-source = spreadflow_exiftool
+source_pkgs =
+    spreadflow_exiftool
 omit =
-    spreadflow_exiftool/test/*
+    /tmp/**
+    spreadflow_exiftool/test/**
+
+[report]
+omit =
+    /tmp/**
+    spreadflow_exiftool/test/**
