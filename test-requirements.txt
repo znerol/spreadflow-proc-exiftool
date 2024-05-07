@@ -1,7 +1,5 @@
 coveralls
 pyflakes
-pylint<1.5
-testtools>=2.2.0
-
+pylint
 -e git+https://github.com/znerol/spreadflow-core#egg=SpreadFlowCore
 -e git+https://github.com/znerol/spreadflow-delta#egg=SpreadFlowDelta
